@@ -31,19 +31,9 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 15px 20px;
             box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.15);
-        }
-
-        /* Status Bar di Atas */
-        .status-bar {
-            color: #fff;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            text-align: center;
-            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.1);
         }
 
         /* Area Sprite Karakter (Bisa Disentuh Langsung) */
@@ -58,7 +48,7 @@
         }
 
         .sprite-area img {
-            max-height: 65vh;
+            max-height: 68vh;
             max-width: 100%;
             object-fit: contain;
             transition: transform 0.1s ease;
@@ -66,14 +56,14 @@
         }
 
         .sprite-area img:active {
-            transform: scale(0.97); /* Efek membal saat disentuh jari */
+            transform: scale(0.97); /* Efek membal saat disentuh */
         }
 
         /* Kotak Teks / Dialog */
         .dialog-box {
             color: #fff;
             font-size: 15px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.65);
             padding: 10px 15px;
             border-radius: 12px;
             text-align: center;
@@ -89,7 +79,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .menu-grid.show {
@@ -117,10 +107,8 @@
 <body>
 
     <div class="hub-container">
-        <!-- Status Bar -->
-        <div class="status-bar" id="statusBar">
-            Mood: Senang 💕 | Kostum: Default
-        </div>
+        <!-- Kosong di atas agar sprite lebih fokus dan tidak kepotong -->
+        <div></div>
 
         <!-- Sprite Interaktif: Sentuh langsung gambar untuk ubah ekspresi & buka menu -->
         <div class="sprite-area" onclick="handleSpriteTouch()">
