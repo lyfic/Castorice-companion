@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Castorice Virtual Companion 💕</title>
     <style>
-        /* Mengunci layar agar pas di HP dan tidak bisa di-scroll */
+        /* Menggunakan dvh agar pas di layar HP tanpa tertutup bilah browser */
         html, body {
             margin: 0;
             padding: 0;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('background.png');
@@ -29,12 +29,16 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Menumpuk elemen dari bawah ke atas agar tombol selalu terlihat */
+            justify-content: space-between;
             align-items: center;
             padding: 10px 15px;
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.1);
-            gap: 8px; /* Jarak antar elemen lebih rapat */
+        }
+
+        /* Spacer atas agar ada ruang kosong minimal */
+        .top-space {
+            height: 5px;
         }
 
         /* Area Sprite Karakter */
@@ -45,7 +49,7 @@
             align-items: center;
             cursor: pointer;
             width: 100%;
-            max-height: 52vh; /* Batasi tinggi maksimum sprite agar tidak menabrak bawah */
+            max-height: 50dvh; /* Batasi tinggi maksimum sprite */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -72,6 +76,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             width: 100%;
             box-sizing: border-box;
+            margin-bottom: 8px;
         }
 
         /* Menu Tombol Tersembunyi */
@@ -80,7 +85,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             width: 100%;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         .menu-grid.show {
@@ -107,6 +112,8 @@
 <body>
 
     <div class="hub-container">
+        <div class="top-space"></div>
+
         <!-- Sprite Interaktif -->
         <div class="sprite-area" onclick="handleSpriteTouch()">
             <img id="castoriceSprite" src="SpriteCD1.png" alt="Castorice Sprite">
