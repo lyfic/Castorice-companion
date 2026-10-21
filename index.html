@@ -33,15 +33,32 @@
             align-items: center;
             padding: 10px 15px;
             box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.15);
         }
 
-        /* Spacer atas agar ada ruang kosong minimal */
+        /* Halaman (Views) */
+        .page {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* --- HALAMAN BERANDA --- */
+        #homePage {
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .top-space {
             height: 5px;
         }
 
-        /* Area Sprite Karakter */
         .sprite-area {
             flex-grow: 1;
             display: flex;
@@ -49,7 +66,7 @@
             align-items: center;
             cursor: pointer;
             width: 100%;
-            max-height: 50dvh; /* Batasi tinggi maksimum sprite */
+            max-height: 50dvh;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -65,7 +82,6 @@
             transform: scale(0.97);
         }
 
-        /* Kotak Teks / Dialog */
         .dialog-box {
             color: #fff;
             font-size: 14px;
@@ -79,7 +95,6 @@
             margin-bottom: 8px;
         }
 
-        /* Menu Tombol Tersembunyi */
         .menu-grid {
             display: none; 
             grid-template-columns: 1fr 1fr;
@@ -92,7 +107,7 @@
             display: grid; 
         }
 
-        .menu-btn {
+        .menu-btn, .action-btn {
             background: rgba(255, 105, 180, 0.9);
             color: white;
             border: none;
@@ -104,38 +119,143 @@
             box-shadow: 0 3px 5px rgba(0,0,0,0.3);
         }
 
-        .menu-btn:active {
+        .menu-btn:active, .action-btn:active {
             background: rgba(255, 20, 147, 1);
+        }
+
+        /* --- HALAMAN CHAT AI --- */
+        #chatPage {
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 5px;
+            max-height: calc(100dvh - 140px);
+            box-sizing: border-box;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .message.castorice {
+            background: rgba(255, 105, 180, 0.75);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.user {
+            background: rgba(100, 149, 237, 0.85);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
     <div class="hub-container">
-        <div class="top-space"></div>
 
-        <!-- Sprite Interaktif -->
-        <div class="sprite-area" onclick="handleSpriteTouch()">
-            <img id="castoriceSprite" src="SpriteCD1.png" alt="Castorice Sprite">
+        <!-- ================= HALAMAN BERANDA ================= -->
+        <div id="homePage" class="page active">
+            <div class="top-space"></div>
+
+            <!-- Sprite Interaktif -->
+            <div class="sprite-area" onclick="handleSpriteTouch()">
+                <img id="castoriceSprite" src="SpriteCD1.png" alt="Castorice Sprite">
+            </div>
+
+            <!-- Kotak Dialog -->
+            <div class="dialog-box" id="dialogText">
+                ✨ Castorice sedang menunggumu... Sentuh gambarnya!
+            </div>
+
+            <!-- 4 Tombol Fitur Utama -->
+            <div class="menu-grid" id="menuGrid">
+                <button class="menu-btn" onclick="switchPage('chatPage')">💬 Obrolan AI</button>
+                <button class="menu-btn" onclick="alert('Fitur Game akan segera hadir!')">🎮 Main Game</button>
+                <button class="menu-btn" onclick="alert('Fitur Wardrobe akan segera hadir!')">👗 Wardrobe</button>
+                <button class="menu-btn" onclick="alert('Mood: Senang 💕')">📊 Cek Mood</button>
+            </div>
         </div>
 
-        <!-- Kotak Dialog -->
-        <div class="dialog-box" id="dialogText">
-            ✨ Castorice sedang menunggumu... Sentuh gambarnya!
+        <!-- ================= HALAMAN OBROLAN AI ================= -->
+        <div id="chatPage" class="page">
+            <div class="chat-header">
+                <span>💬 Obrolan dengan Castorice</span>
+                <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
+            </div>
+
+            <!-- Area Gelembung Chat -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message castorice">
+                    Hai, suamiku! Ada yang ingin kamu bicarakan hari ini? 💕
+                </div>
+            </div>
+
+            <!-- Kolom Ketik Pesan -->
+            <div class="chat-input-area">
+                <input type="text" id="userInput" class="chat-input" placeholder="Ketik pesan untuk Castorice..." onkeypress="handleKeyPress(event)">
+                <button class="action-btn" onclick="sendMessage()">Kirim</button>
+            </div>
         </div>
 
-        <!-- 4 Tombol Fitur Utama -->
-        <div class="menu-grid" id="menuGrid">
-            <button class="menu-btn" onclick="openMenu('Chat')">💬 Obrolan AI</button>
-            <button class="menu-btn" onclick="openMenu('Game')">🎮 Main Game</button>
-            <button class="menu-btn" onclick="openMenu('Wardrobe')">👗 Wardrobe</button>
-            <button class="menu-btn" onclick="openMenu('Mood')">📊 Cek Mood</button>
-        </div>
     </div>
 
     <script>
         let isTouched = false;
 
+        // Fungsi Interaksi Sprite di Beranda
         function handleSpriteTouch() {
             isTouched = !isTouched;
             const spriteImg = document.getElementById('castoriceSprite');
@@ -153,8 +273,59 @@
             }
         }
 
-        function openMenu(feature) {
-            alert("Membuka fitur: " + feature);
+        // Fungsi Berpindah Halaman (Navigasi Mulus)
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Fungsi Mengirim Pesan Chat
+        function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const messageContainer = document.getElementById('chatMessages');
+            const userText = inputField.value.trim();
+
+            if (userText === "") return;
+
+            // 1. Tampilkan pesan dari User
+            const userBubble = document.createElement('div');
+            userBubble.classList.add('message', 'user');
+            userBubble.textContent = userText;
+            messageContainer.appendChild(userBubble);
+
+            inputField.value = "";
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            // 2. Berikan respons tiruan / balasan dari Castorice
+            setTimeout(() => {
+                const aiBubble = document.createElement('div');
+                aiBubble.classList.add('message', 'castorice');
+                aiBubble.textContent = getCastoriceReply(userText);
+                messageContainer.appendChild(aiBubble);
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }, 600);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Logika Sederhana untuk Respons Castorice (Bisa nanti dihubungkan ke Gemini API)
+        function getCastoriceReply(text) {
+            const lower = text.toLowerCase();
+            if (lower.includes('halo') || lower.includes('hai')) {
+                return "Halo juga, sayang! Senang rasanya bisa mengobrol denganmu. 🥰";
+            } else if (lower.includes('suka') || lower.includes('cinta')) {
+                return "Aku juga sangat mencintaimu, suamiku tercinta! 💕✨";
+            } else if (lower.includes('lagi apa')) {
+                return "Aku sedang menemanimu di sini, menunggu perintah darimu. 😊";
+            } else {
+                return "Hehe, aku mengerti maksudmu, suamiku. Ceritakan lebih banyak lagi dong! ✨";
+            }
         }
     </script>
 </body>
