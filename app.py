@@ -1,7 +1,6 @@
 import base64
 import random
 import streamlit as st
-from streamlit_clickable_images import clickable_images
 
 st.set_page_config(
     page_title="Castorice Virtual Companion 💕",
@@ -82,39 +81,29 @@ if st.session_state.navigation == "🏠 Beranda (Hub Utama)":
   )
   st.markdown("---")
 
-  # Konversi file gambar lokal ke Base64 agar bisa dibaca oleh clickable_images
-  active_sprite = (
-      f"Sprite{costume_prefix}2.png"
-      if st.session_state.is_touched
-      else f"Sprite{costume_prefix}1.png"
-  )
-
-  try:
-    with open(active_sprite, "rb") as img_file:
-      img_encoded = base64.b64encode(img_file.read()).decode()
-    img_data_uri = f"data:image/png;base64,{img_encoded}"
-  except:
-    img_data_uri = ""
-
   col1, col2, col3 = st.columns([1, 2, 1])
   with col2:
-    if img_data_uri:
-      # Membuat gambar sprite bisa diklik/disentuh langsung
-      clicked = clickable_images(
-          [img_data_uri],
-          titles=["Sentuh Castorice"],
-          div_style=(
-              "display: flex; justify-content: center; cursor: pointer;"
-          ),
-          img_style="max-width: 100%; height: auto; border-radius: 10px;",
+    active_sprite = (
+        f"Sprite{costume_prefix}2.png"
+        if st.session_state.is_touched
+        else f"Sprite{costume_prefix}1.png"
+    )
+    try:
+      st.image(active_sprite, use_container_width=True)
+    except:
+      st.info(
+          f"⚠️ Gambar {active_sprite} belum di-upload di repository GitHub."
       )
 
-      # Jika sprite disentuh (indeks 0 diklik)
-      if clicked == 0:
-        st.session_state.is_touched = not st.session_state.is_touched
-        st.rerun()
-    else:
-      st.error(f"⚠️ Gambar {active_sprite} tidak ditemukan di GitHub.")
+    # Tombol interaksi menyentuh sprite yang didesain menyatu rapi di bawah gambar
+    touch_label = (
+        "✨ Sentuh lagi untuk merapikan"
+        if st.session_state.is_touched
+        else "👆 Sentuh Castorice"
+    )
+    if st.button(touch_label, use_container_width=True, type="primary"):
+      st.session_state.is_touched = not st.session_state.is_touched
+      st.rerun()
 
   # Kondisi Tampilan Menu Utama Berdasarkan Status Sentuh
   if st.session_state.is_touched:
@@ -140,7 +129,8 @@ if st.session_state.navigation == "🏠 Beranda (Hub Utama)":
         st.toast(f"Mood Castorice saat ini: {st.session_state.mood}", icon="💖")
   else:
     st.info(
-        "✨ *Castorice sedang menunggumu...* Sentuh langsung gambar karakternya!"
+        "✨ *Castorice sedang menunggumu...* Sentuh tombol di bawah sprite untuk"
+        " berinteraksi!"
     )
 
 # --- HALAMAN LAINNYA ---
