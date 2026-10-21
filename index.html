@@ -12,7 +12,6 @@
             height: 100dvh;
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Background sementara dihilangkan/diganti warna tema lembut */
             background: linear-gradient(135deg, #2c163a, #4a2858);
             display: flex;
             justify-content: center;
@@ -215,8 +214,45 @@
             outline: none;
         }
 
-        /* HALAMAN MINI GAME (Tebak Angka Cinta) */
-        #gamePage {
+        /* HALAMAN KUMPULAN MENU GAME (ARCADE) */
+        #gameHubPage {
+            justify-content: flex-start;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .game-list-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .game-item-btn {
+            background: rgba(255, 105, 180, 0.85);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-item-btn:active {
+            background: rgba(255, 20, 147, 1);
+        }
+
+        /* HALAMAN GAME TUNGGAL (Tebak Angka) */
+        #guessGamePage {
             justify-content: flex-start;
             padding: 10px 0;
             color: white;
@@ -227,7 +263,7 @@
             background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 15px;
-            margin-top: 25px;
+            margin-top: 15px;
             box-sizing: border-box;
         }
 
@@ -332,7 +368,7 @@
             </div>
             <div class="menu-grid" id="menuGrid">
                 <button class="menu-btn" onclick="switchPage('chatPage')">💬 Obrolan AI</button>
-                <button class="menu-btn" onclick="switchPage('gamePage')">🎮 Main Game</button>
+                <button class="menu-btn" onclick="switchPage('gameHubPage')">🎮 Main Game</button>
                 <button class="menu-btn" onclick="alert('Fitur Wardrobe akan segera hadir!')">👗 Wardrobe</button>
                 <button class="menu-btn" onclick="alert('Mood: Senang 💕')">📊 Cek Mood</button>
             </div>
@@ -355,14 +391,36 @@
             </div>
         </div>
 
-        <!-- HALAMAN MINI GAME ("Tebak Angka Cinta") -->
-        <div id="gamePage" class="page">
+        <!-- HALAMAN DAFTAR MENU GAME (GAME HUB) -->
+        <div id="gameHubPage" class="page">
             <div class="chat-header">
-                <span>🎮 Mini Game Bersama Castorice</span>
+                <span>🕹️ Pilih Game Bersama Castorice</span>
                 <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
             </div>
+            <div class="game-list-grid">
+                <button class="game-item-btn" onclick="switchPage('guessGamePage')">
+                    <span>💕 Tebak Angka Cinta</span>
+                    <span>➡️</span>
+                </button>
+                <button class="game-item-btn" onclick="alert('Game baru akan segera hadir, suamiku! Sabar ya~')">
+                    <span>✨ Kuis Gombalan (Segera)</span>
+                    <span>🔒</span>
+                </button>
+                <button class="game-item-btn" onclick="alert('Game baru akan segera hadir, suamiku! Sabar ya~')">
+                    <span>🍵 Temani Teh Sore (Segera)</span>
+                    <span>🔒</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- HALAMAN GAME 1: TEBAK ANGKA CINTA -->
+        <div id="guessGamePage" class="page">
+            <div class="chat-header">
+                <span>💕 Tebak Angka Cinta</span>
+                <button class="back-btn" onclick="switchPage('gameHubPage')">⬅️ Kembali</button>
+            </div>
             <div class="game-card">
-                <h3>💕 Tebak Angka Cinta</h3>
+                <h3>Tebak Angka Cinta</h3>
                 <p id="gameMessage">Castorice memikirkan sebuah angka dari 1 sampai 10. Coba tebak berapa tingkat rasa sayangnya padamu hari ini!</p>
                 <input type="number" id="guessInput" class="game-input" placeholder="1 - 10" min="1" max="10">
                 <br>
@@ -451,7 +509,7 @@
             }
         }
 
-        // Fungsi Chat Gemini API (Menggunakan gemini-3.8-flash)
+        // Fungsi Chat Gemini API
         async function sendMessage() {
             const apiKey = getApiKey();
             if (!apiKey) {
