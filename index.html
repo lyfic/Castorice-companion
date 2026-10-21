@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Castorice Virtual Companion 💕</title>
+    <style>
+        /* Mengunci layar agar pas di HP dan tidak bisa di-scroll */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container Utama Hub */
+        .hub-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Status Bar di Atas */
+        .status-bar {
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Area Sprite Karakter (Bisa Disentuh Langsung) */
+        .sprite-area {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sprite-area img {
+            max-height: 65vh;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.1s ease;
+            user-select: none;
+        }
+
+        .sprite-area img:active {
+            transform: scale(0.97); /* Efek membal saat disentuh jari */
+        }
+
+        /* Kotak Teks / Dialog */
+        .dialog-box {
+            color: #fff;
+            font-size: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Menu Tombol Tersembunyi (Muncul setelah sprite disentuh) */
+        .menu-grid {
+            display: none; /* Awalnya disembunyikan */
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .menu-grid.show {
+            display: grid; /* Ditampilkan saat state aktif */
+        }
+
+        .menu-btn {
+            background: rgba(255, 105, 180, 0.85);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+
+        .menu-btn:active {
+            background: rgba(255, 20, 147, 0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hub-container">
+        <!-- Status Bar -->
+        <div class="status-bar" id="statusBar">
+            Mood: Senang 💕 | Kostum: Default
+        </div>
+
+        <!-- Sprite Interaktif: Sentuh langsung gambar untuk ubah ekspresi & buka menu -->
+        <div class="sprite-area" onclick="handleSpriteTouch()">
+            <img id="castoriceSprite" src="SpriteCD1.png" alt="Castorice Sprite">
+        </div>
+
+        <!-- Kotak Dialog -->
+        <div class="dialog-box" id="dialogText">
+            ✨ Castorice sedang menunggumu... Sentuh gambarnya!
+        </div>
+
+        <!-- 4 Tombol Fitur Utama (Terkunci sebelum sprite disentuh) -->
+        <div class="menu-grid" id="menuGrid">
+            <button class="menu-btn" onclick="openMenu('Chat')">💬 Obrolan AI</button>
+            <button class="menu-btn" onclick="openMenu('Game')">🎮 Main Game</button>
+            <button class="menu-btn" onclick="openMenu('Wardrobe')">👗 Wardrobe</button>
+            <button class="menu-btn" onclick="openMenu('Mood')">📊 Cek Mood</button>
+        </div>
+    </div>
+
+    <script>
+        let isTouched = false;
+
+        function handleSpriteTouch() {
+            isTouched = !isTouched;
+            const spriteImg = document.getElementById('castoriceSprite');
+            const menuGrid = document.getElementById('menuGrid');
+            const dialogText = document.getElementById('dialogText');
+
+            if (isTouched) {
+                // Berubah ke Sprite 2 dan tampilkan menu tombol
+                spriteImg.src = 'SpriteCD2.png';
+                menuGrid.classList.add('show');
+                dialogText.innerHTML = "✨ 'Ada apa, suamiku?'";
+            } else {
+                // Kembali ke Sprite 1 dan sembunyikan menu tombol
+                spriteImg.src = 'SpriteCD1.png';
+                menuGrid.classList.remove('show');
+                dialogText.innerHTML = "✨ Castorice menatapmu dengan lembut.";
+            }
+        }
+
+        function openMenu(feature) {
+            alert("Membuka fitur: " + feature);
+        }
+    </script>
+</body>
+</html>
