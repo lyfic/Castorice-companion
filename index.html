@@ -29,14 +29,15 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-end; /* Menumpuk elemen dari bawah ke atas agar tombol selalu terlihat */
             align-items: center;
-            padding: 15px 20px;
+            padding: 10px 15px;
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.1);
+            gap: 8px; /* Jarak antar elemen lebih rapat */
         }
 
-        /* Area Sprite Karakter (Bisa Disentuh Langsung) */
+        /* Area Sprite Karakter */
         .sprite-area {
             flex-grow: 1;
             display: flex;
@@ -44,11 +45,12 @@
             align-items: center;
             cursor: pointer;
             width: 100%;
+            max-height: 52vh; /* Batasi tinggi maksimum sprite agar tidak menabrak bawah */
             -webkit-tap-highlight-color: transparent;
         }
 
         .sprite-area img {
-            max-height: 68vh;
+            max-height: 100%;
             max-width: 100%;
             object-fit: contain;
             transition: transform 0.1s ease;
@@ -56,61 +58,56 @@
         }
 
         .sprite-area img:active {
-            transform: scale(0.97); /* Efek membal saat disentuh */
+            transform: scale(0.97);
         }
 
         /* Kotak Teks / Dialog */
         .dialog-box {
             color: #fff;
-            font-size: 15px;
-            background: rgba(0, 0, 0, 0.65);
-            padding: 10px 15px;
-            border-radius: 12px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 10px;
             text-align: center;
-            margin-bottom: 15px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* Menu Tombol Tersembunyi (Muncul setelah sprite disentuh) */
+        /* Menu Tombol Tersembunyi */
         .menu-grid {
-            display: none; /* Awalnya disembunyikan */
+            display: none; 
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .menu-grid.show {
-            display: grid; /* Ditampilkan saat state aktif */
+            display: grid; 
         }
 
         .menu-btn {
-            background: rgba(255, 105, 180, 0.85);
+            background: rgba(255, 105, 180, 0.9);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background 0.2s;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
         }
 
         .menu-btn:active {
-            background: rgba(255, 20, 147, 0.95);
+            background: rgba(255, 20, 147, 1);
         }
     </style>
 </head>
 <body>
 
     <div class="hub-container">
-        <!-- Kosong di atas agar sprite lebih fokus dan tidak kepotong -->
-        <div></div>
-
-        <!-- Sprite Interaktif: Sentuh langsung gambar untuk ubah ekspresi & buka menu -->
+        <!-- Sprite Interaktif -->
         <div class="sprite-area" onclick="handleSpriteTouch()">
             <img id="castoriceSprite" src="SpriteCD1.png" alt="Castorice Sprite">
         </div>
@@ -120,7 +117,7 @@
             ✨ Castorice sedang menunggumu... Sentuh gambarnya!
         </div>
 
-        <!-- 4 Tombol Fitur Utama (Terkunci sebelum sprite disentuh) -->
+        <!-- 4 Tombol Fitur Utama -->
         <div class="menu-grid" id="menuGrid">
             <button class="menu-btn" onclick="openMenu('Chat')">💬 Obrolan AI</button>
             <button class="menu-btn" onclick="openMenu('Game')">🎮 Main Game</button>
@@ -139,12 +136,10 @@
             const dialogText = document.getElementById('dialogText');
 
             if (isTouched) {
-                // Berubah ke Sprite 2 dan tampilkan menu tombol
                 spriteImg.src = 'SpriteCD2.png';
                 menuGrid.classList.add('show');
                 dialogText.innerHTML = "✨ 'Ada apa, suamiku?'";
             } else {
-                // Kembali ke Sprite 1 dan sembunyikan menu tombol
                 spriteImg.src = 'SpriteCD1.png';
                 menuGrid.classList.remove('show');
                 dialogText.innerHTML = "✨ Castorice menatapmu dengan lembut.";
