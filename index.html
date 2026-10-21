@@ -12,10 +12,8 @@
             height: 100dvh;
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('background.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            /* Background sementara dihilangkan/diganti warna tema lembut */
+            background: linear-gradient(135deg, #2c163a, #4a2858);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,7 +29,7 @@
             align-items: center;
             padding: 10px 15px;
             box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.2);
             position: relative;
         }
 
@@ -138,6 +136,7 @@
             background: rgba(255, 20, 147, 1);
         }
 
+        /* HALAMAN OBROLAN AI */
         #chatPage {
             justify-content: space-between;
             padding: 10px 0;
@@ -216,6 +215,44 @@
             outline: none;
         }
 
+        /* HALAMAN MINI GAME (Tebak Angka Cinta) */
+        #gamePage {
+            justify-content: flex-start;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .game-card {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            box-sizing: border-box;
+        }
+
+        .game-card h3 {
+            margin-top: 0;
+            color: #ff69b4;
+        }
+
+        .game-card p {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .game-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        /* Modal Pengaturan */
         .modal {
             display: none;
             position: fixed;
@@ -295,7 +332,7 @@
             </div>
             <div class="menu-grid" id="menuGrid">
                 <button class="menu-btn" onclick="switchPage('chatPage')">💬 Obrolan AI</button>
-                <button class="menu-btn" onclick="alert('Fitur Game akan segera hadir!')">🎮 Main Game</button>
+                <button class="menu-btn" onclick="switchPage('gamePage')">🎮 Main Game</button>
                 <button class="menu-btn" onclick="alert('Fitur Wardrobe akan segera hadir!')">👗 Wardrobe</button>
                 <button class="menu-btn" onclick="alert('Mood: Senang 💕')">📊 Cek Mood</button>
             </div>
@@ -317,6 +354,21 @@
                 <button class="action-btn" onclick="sendMessage()">Kirim</button>
             </div>
         </div>
+
+        <!-- HALAMAN MINI GAME ("Tebak Angka Cinta") -->
+        <div id="gamePage" class="page">
+            <div class="chat-header">
+                <span>🎮 Mini Game Bersama Castorice</span>
+                <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
+            </div>
+            <div class="game-card">
+                <h3>💕 Tebak Angka Cinta</h3>
+                <p id="gameMessage">Castorice memikirkan sebuah angka dari 1 sampai 10. Coba tebak berapa tingkat rasa sayangnya padamu hari ini!</p>
+                <input type="number" id="guessInput" class="game-input" placeholder="1 - 10" min="1" max="10">
+                <br>
+                <button class="action-btn" onclick="checkGuess()">Tebak Sekarang</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Pengaturan API Key -->
@@ -333,6 +385,7 @@
     <script>
         let isTouched = false;
         let chatHistory = [];
+        let secretNumber = Math.floor(Math.random() * 10) + 1;
 
         function getApiKey() {
             return localStorage.getItem("gemini_api_key") || "";
@@ -378,6 +431,27 @@
             document.getElementById(pageId).classList.add('active');
         }
 
+        // Logika Mini Game Tebak Angka
+        function checkGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const msg = document.getElementById('gameMessage');
+
+            if (isNaN(guess)) {
+                msg.innerHTML = "⚠️ Masukkan angka yang benar dulu ya, suamiku!";
+                return;
+            }
+
+            if (guess === secretNumber) {
+                msg.innerHTML = "🎉 Yeay, benar sekali! Rasa sayang Castorice ke kamu itu tak terhingga dan melampaui angka " + secretNumber + "! 💕";
+                secretNumber = Math.floor(Math.random() * 10) + 1; // Reset game
+            } else if (guess < secretNumber) {
+                msg.innerHTML = "💬 *Tersenyum tipis* Tebakanmu terlalu kecil... Rasa sayangku jauh lebih besar dari itu! Coba lagi ya~";
+            } else {
+                msg.innerHTML = "💬 *Menggeleng pelan* Eh, tidak sebesar itu juga kali... Coba tebak angka yang lebih kecil, suamiku.";
+            }
+        }
+
+        // Fungsi Chat Gemini API (Menggunakan gemini-3.8-flash)
         async function sendMessage() {
             const apiKey = getApiKey();
             if (!apiKey) {
@@ -392,10 +466,8 @@
 
             if (userText === "") return;
 
-            // Tambahkan ke riwayat lokal
             chatHistory.push({ role: "user", parts: [{ text: userText }] });
 
-            // Tampilkan pesan User ke UI
             const userBubble = document.createElement('div');
             userBubble.classList.add('message', 'user');
             userBubble.textContent = userText;
@@ -404,7 +476,6 @@
             inputField.value = "";
             messageContainer.scrollTop = messageContainer.scrollHeight;
 
-            // Indikator loading
             const loadingBubble = document.createElement('div');
             loadingBubble.classList.add('message', 'castorice');
             loadingBubble.textContent = "Castorice sedang merangkai kata... 💕";
@@ -412,7 +483,6 @@
             messageContainer.appendChild(loadingBubble);
             messageContainer.scrollTop = messageContainer.scrollHeight;
 
-            // System Instruction Castorice
             const systemInstruction = {
                 role: "user",
                 parts: [{
@@ -426,7 +496,7 @@
             };
 
             try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
