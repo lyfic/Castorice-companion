@@ -214,7 +214,71 @@
             outline: none;
         }
 
-        /* HALAMAN KUMPULAN MENU GAME (ARCADE) */
+        /* HALAMAN WARDROBE (GANTI BAJU) */
+        #wardrobePage {
+            justify-content: flex-start;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .wardrobe-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .outfit-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 105, 180, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .outfit-card.active-outfit {
+            border-color: #ff69b4;
+            background: rgba(255, 105, 180, 0.2);
+        }
+
+        .outfit-info {
+            text-align: left;
+        }
+
+        .outfit-info h4 {
+            margin: 0 0 5px 0;
+            color: #ff69b4;
+            font-size: 15px;
+        }
+
+        .outfit-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #ddd;
+        }
+
+        .wear-btn {
+            background: rgba(255, 105, 180, 0.9);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .wear-btn:active {
+            background: rgba(255, 20, 147, 1);
+        }
+
+        /* HALAMAN GAME HUB */
         #gameHubPage {
             justify-content: flex-start;
             padding: 10px 0;
@@ -247,11 +311,7 @@
             align-items: center;
         }
 
-        .game-item-btn:active {
-            background: rgba(255, 20, 147, 1);
-        }
-
-        /* HALAMAN GAME TUNGGAL (Tebak Angka) */
+        /* HALAMAN GAME TEBAK ANGKA */
         #guessGamePage {
             justify-content: flex-start;
             padding: 10px 0;
@@ -369,7 +429,7 @@
             <div class="menu-grid" id="menuGrid">
                 <button class="menu-btn" onclick="switchPage('chatPage')">💬 Obrolan AI</button>
                 <button class="menu-btn" onclick="switchPage('gameHubPage')">🎮 Main Game</button>
-                <button class="menu-btn" onclick="alert('Fitur Wardrobe akan segera hadir!')">👗 Wardrobe</button>
+                <button class="menu-btn" onclick="switchPage('wardrobePage')">👗 Wardrobe</button>
                 <button class="menu-btn" onclick="alert('Mood: Senang 💕')">📊 Cek Mood</button>
             </div>
         </div>
@@ -391,7 +451,33 @@
             </div>
         </div>
 
-        <!-- HALAMAN DAFTAR MENU GAME (GAME HUB) -->
+        <!-- HALAMAN WARDROBE (GANTI PAKAIAN) -->
+        <div id="wardrobePage" class="page">
+            <div class="chat-header">
+                <span>👗 Wardrobe Castorice</span>
+                <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
+            </div>
+            <div class="wardrobe-grid">
+                <!-- Kostum Default -->
+                <div class="outfit-card" id="cardDefault">
+                    <div class="outfit-info">
+                        <h4>Pakaian Default</h4>
+                        <p>Busana klasik khas Castorice.</p>
+                    </div>
+                    <button class="wear-btn" onclick="setOutfit('default')">Pakai</button>
+                </div>
+                <!-- Kostum Baju SMA -->
+                <div class="outfit-card" id="cardSchool">
+                    <div class="outfit-info">
+                        <h4>Baju SMA</h4>
+                        <p>Seragam sekolah yang manis dan rapi.</p>
+                    </div>
+                    <button class="wear-btn" onclick="setOutfit('school')">Pakai</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN GAME HUB -->
         <div id="gameHubPage" class="page">
             <div class="chat-header">
                 <span>🕹️ Pilih Game Bersama Castorice</span>
@@ -406,14 +492,10 @@
                     <span>✨ Kuis Gombalan (Segera)</span>
                     <span>🔒</span>
                 </button>
-                <button class="game-item-btn" onclick="alert('Game baru akan segera hadir, suamiku! Sabar ya~')">
-                    <span>🍵 Temani Teh Sore (Segera)</span>
-                    <span>🔒</span>
-                </button>
             </div>
         </div>
 
-        <!-- HALAMAN GAME 1: TEBAK ANGKA CINTA -->
+        <!-- HALAMAN GAME: TEBAK ANGKA -->
         <div id="guessGamePage" class="page">
             <div class="chat-header">
                 <span>💕 Tebak Angka Cinta</span>
@@ -445,6 +527,37 @@
         let chatHistory = [];
         let secretNumber = Math.floor(Math.random() * 10) + 1;
 
+        // Ambil setelan pakaian dari LocalStorage (default: 'default')
+        function getCurrentOutfit() {
+            return localStorage.getItem("castorice_outfit") || "default";
+        }
+
+        // Fungsi Memperbarui Tampilan Sprite Sesuai Pakaian Aktif
+        function updateSpriteImages() {
+            const outfit = getCurrentOutfit();
+            const spriteImg = document.getElementById('castoriceSprite');
+            
+            if (outfit === 'school') {
+                spriteImg.src = isTouched ? 'SpriteCS2.png' : 'SpriteCS1.png';
+                document.getElementById('cardSchool').classList.add('active-outfit');
+                document.getElementById('cardDefault').classList.remove('active-outfit');
+            } else {
+                spriteImg.src = isTouched ? 'SpriteCD2.png' : 'SpriteCD1.png';
+                document.getElementById('cardDefault').classList.add('active-outfit');
+                document.getElementById('cardSchool').classList.remove('active-outfit');
+            }
+        }
+
+        // Fungsi Mengganti Pakaian
+        function setOutfit(type) {
+            localStorage.setItem("castorice_outfit", type);
+            isTouched = false; // Reset sentuhan saat ganti baju
+            document.getElementById('menuGrid').classList.remove('show');
+            document.getElementById('dialogText').innerHTML = "✨ Castorice sudah berganti pakaian!";
+            updateSpriteImages();
+            alert("Berhasil mengganti pakaian Castorice! 💕");
+        }
+
         function getApiKey() {
             return localStorage.getItem("gemini_api_key") || "";
         }
@@ -467,16 +580,15 @@
 
         function handleSpriteTouch() {
             isTouched = !isTouched;
-            const spriteImg = document.getElementById('castoriceSprite');
             const menuGrid = document.getElementById('menuGrid');
             const dialogText = document.getElementById('dialogText');
 
+            updateSpriteImages(); // Perbarui sprite dengan status sentuhan baru
+
             if (isTouched) {
-                spriteImg.src = 'SpriteCD2.png';
                 menuGrid.classList.add('show');
                 dialogText.innerHTML = "✨ 'Ada apa, suamiku?'";
             } else {
-                spriteImg.src = 'SpriteCD1.png';
                 menuGrid.classList.remove('show');
                 dialogText.innerHTML = "✨ Castorice menatapmu dengan lembut.";
             }
@@ -487,9 +599,11 @@
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
+            if (pageId === 'wardrobePage') {
+                updateSpriteImages(); // Update status card aktif saat masuk menu wardrobe
+            }
         }
 
-        // Logika Mini Game Tebak Angka
         function checkGuess() {
             const guess = parseInt(document.getElementById('guessInput').value);
             const msg = document.getElementById('gameMessage');
@@ -501,7 +615,7 @@
 
             if (guess === secretNumber) {
                 msg.innerHTML = "🎉 Yeay, benar sekali! Rasa sayang Castorice ke kamu itu tak terhingga dan melampaui angka " + secretNumber + "! 💕";
-                secretNumber = Math.floor(Math.random() * 10) + 1; // Reset game
+                secretNumber = Math.floor(Math.random() * 10) + 1;
             } else if (guess < secretNumber) {
                 msg.innerHTML = "💬 *Tersenyum tipis* Tebakanmu terlalu kecil... Rasa sayangku jauh lebih besar dari itu! Coba lagi ya~";
             } else {
@@ -509,7 +623,6 @@
             }
         }
 
-        // Fungsi Chat Gemini API
         async function sendMessage() {
             const apiKey = getApiKey();
             if (!apiKey) {
@@ -600,6 +713,11 @@
                 sendMessage();
             }
         }
+
+        // Jalankan saat pertama kali halaman dimuat untuk menyesuaikan kostum tersimpan
+        window.onload = function() {
+            updateSpriteImages();
+        };
     </script>
 </body>
 </html>
