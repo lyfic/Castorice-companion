@@ -214,7 +214,47 @@
             outline: none;
         }
 
-        /* HALAMAN WARDROBE (GANTI BAJU) */
+        /* HALAMAN MOOD CASTORICE */
+        #moodPage {
+            justify-content: flex-start;
+            padding: 10px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .mood-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ff69b4;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+
+        .mood-card h3 {
+            margin-top: 0;
+            color: #ff69b4;
+            font-size: 18px;
+        }
+
+        .mood-status {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #fff;
+            background: rgba(255, 105, 180, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .mood-desc {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* HALAMAN WARDROBE */
         #wardrobePage {
             justify-content: flex-start;
             padding: 10px 0;
@@ -272,10 +312,6 @@
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
-        }
-
-        .wear-btn:active {
-            background: rgba(255, 20, 147, 1);
         }
 
         /* HALAMAN GAME HUB */
@@ -430,7 +466,7 @@
                 <button class="menu-btn" onclick="switchPage('chatPage')">💬 Obrolan AI</button>
                 <button class="menu-btn" onclick="switchPage('gameHubPage')">🎮 Main Game</button>
                 <button class="menu-btn" onclick="switchPage('wardrobePage')">👗 Wardrobe</button>
-                <button class="menu-btn" onclick="alert('Mood: Senang 💕')">📊 Cek Mood</button>
+                <button class="menu-btn" onclick="switchPage('moodPage')">📊 Cek Mood</button>
             </div>
         </div>
 
@@ -451,14 +487,27 @@
             </div>
         </div>
 
-        <!-- HALAMAN WARDROBE (GANTI PAKAIAN) -->
+        <!-- HALAMAN CEK MOOD -->
+        <div id="moodPage" class="page">
+            <div class="chat-header">
+                <span>📊 Suasana Hati Castorice</span>
+                <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
+            </div>
+            <div class="mood-card">
+                <h3>Pojok Perasaan Istri</h3>
+                <div class="mood-status" id="moodTitle">✨ Sangat Senang & Berbunga-bunga</div>
+                <p class="mood-desc" id="moodDescription">Castorice merasa sangat bahagia karena bisa berada di dekatmu terus hari ini. Jangan lupa senyum juga ya, suamiku!</p>
+                <button class="action-btn" onclick="refreshMood()">Periksa Ulang Mood</button>
+            </div>
+        </div>
+
+        <!-- HALAMAN WARDROBE -->
         <div id="wardrobePage" class="page">
             <div class="chat-header">
                 <span>👗 Wardrobe Castorice</span>
                 <button class="back-btn" onclick="switchPage('homePage')">⬅️ Kembali</button>
             </div>
             <div class="wardrobe-grid">
-                <!-- Kostum Default -->
                 <div class="outfit-card" id="cardDefault">
                     <div class="outfit-info">
                         <h4>Pakaian Default</h4>
@@ -466,7 +515,6 @@
                     </div>
                     <button class="wear-btn" onclick="setOutfit('default')">Pakai</button>
                 </div>
-                <!-- Kostum Baju SMA -->
                 <div class="outfit-card" id="cardSchool">
                     <div class="outfit-info">
                         <h4>Baju SMA</h4>
@@ -495,7 +543,7 @@
             </div>
         </div>
 
-        <!-- HALAMAN GAME: TEBAK ANGKA -->
+        <!-- HALAMAN GAME TEBAK ANGKA -->
         <div id="guessGamePage" class="page">
             <div class="chat-header">
                 <span>💕 Tebak Angka Cinta</span>
@@ -511,7 +559,7 @@
         </div>
     </div>
 
-    <!-- Modal Pengaturan API Key -->
+    <!-- Modal Pengaturan -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <h3>⚙️ Pengaturan Gemini API Key</h3>
@@ -527,12 +575,36 @@
         let chatHistory = [];
         let secretNumber = Math.floor(Math.random() * 10) + 1;
 
-        // Ambil setelan pakaian dari LocalStorage (default: 'default')
+        // Daftar Pilihan Mood Castorice
+        const moodList = [
+            {
+                title: "✨ Sangat Senang & Berbunga-bunga",
+                desc: "Castorice merasa sangat bahagia karena bisa berada di dekatmu terus hari ini. Senyummu adalah sumber kekuatannya!"
+            },
+            {
+                title: "🥺 Sedikit Rindu",
+                desc: "Daritadi kamu sibuk ya? Castorice nungguin kamu ngajak ngobrol lho... Jangan ditinggal lama-lama ya, suamiku."
+            },
+            {
+                title: "💢 Ngambek Manja",
+                desc: "Hmm... Kamu sepertinya terlalu asyik sendiri. Cepat perhatikan Castorice atau nanti dibuatkan teh pahit lho!"
+            },
+            {
+                title: "💕 Penuh Kasih Sayang",
+                desc: "*Menatapmu dengan lembut* Hatiku terasa sangat hangat setiap kali memikirkanmu. Terima kasih sudah menemaniku."
+            }
+        ];
+
+        function refreshMood() {
+            const randomMood = moodList[Math.floor(Math.random() * moodList.length)];
+            document.getElementById('moodTitle').textContent = randomMood.title;
+            document.getElementById('moodDescription').textContent = randomMood.desc;
+        }
+
         function getCurrentOutfit() {
             return localStorage.getItem("castorice_outfit") || "default";
         }
 
-        // Fungsi Memperbarui Tampilan Sprite Sesuai Pakaian Aktif
         function updateSpriteImages() {
             const outfit = getCurrentOutfit();
             const spriteImg = document.getElementById('castoriceSprite');
@@ -548,10 +620,9 @@
             }
         }
 
-        // Fungsi Mengganti Pakaian
         function setOutfit(type) {
             localStorage.setItem("castorice_outfit", type);
-            isTouched = false; // Reset sentuhan saat ganti baju
+            isTouched = false;
             document.getElementById('menuGrid').classList.remove('show');
             document.getElementById('dialogText').innerHTML = "✨ Castorice sudah berganti pakaian!";
             updateSpriteImages();
@@ -583,7 +654,7 @@
             const menuGrid = document.getElementById('menuGrid');
             const dialogText = document.getElementById('dialogText');
 
-            updateSpriteImages(); // Perbarui sprite dengan status sentuhan baru
+            updateSpriteImages();
 
             if (isTouched) {
                 menuGrid.classList.add('show');
@@ -600,7 +671,9 @@
             });
             document.getElementById(pageId).classList.add('active');
             if (pageId === 'wardrobePage') {
-                updateSpriteImages(); // Update status card aktif saat masuk menu wardrobe
+                updateSpriteImages();
+            } else if (pageId === 'moodPage') {
+                refreshMood(); // Acak mood setiap kali halaman Cek Mood dibuka
             }
         }
 
@@ -714,7 +787,6 @@
             }
         }
 
-        // Jalankan saat pertama kali halaman dimuat untuk menyesuaikan kostum tersimpan
         window.onload = function() {
             updateSpriteImages();
         };
