@@ -50,8 +50,9 @@
             font-size: 11px;
             font-weight: bold;
             display: flex;
-            align-items: center;
-            gap: 5px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
         }
 
         .settings-icon {
@@ -227,49 +228,20 @@
             outline: none;
         }
 
-        /* POJOK PERHATIAN / PENGINGAT ISTIRAHAT */
-        #carePage {
+        /* HALAMAN LAINNYA */
+        #carePage, #moodPage, #wardrobePage, #gameHubPage, #guessGamePage, #flirtGamePage {
             justify-content: flex-start;
             padding: 10px 0;
             color: white;
             text-align: center;
         }
 
-        .care-card {
+        .care-card, .mood-card, .game-card {
             background: rgba(0, 0, 0, 0.6);
             border: 2px solid #ff69b4;
             padding: 20px;
             border-radius: 15px;
             margin-top: 15px;
-            box-sizing: border-box;
-        }
-
-        .care-card h3 {
-            margin-top: 0;
-            color: #ff69b4;
-        }
-
-        .care-card p {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #ddd;
-            margin-bottom: 15px;
-        }
-
-        /* HALAMAN LAINNYA */
-        #moodPage, #wardrobePage, #gameHubPage, #guessGamePage {
-            justify-content: flex-start;
-            padding: 10px 0;
-            color: white;
-            text-align: center;
-        }
-
-        .mood-card, .game-card {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #ff69b4;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
             box-sizing: border-box;
         }
 
@@ -359,14 +331,15 @@
         }
 
         .game-input {
-            width: 80%;
+            width: 90%;
             padding: 10px;
             border-radius: 8px;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             text-align: center;
             margin: 10px 0;
             outline: none;
+            box-sizing: border-box;
         }
 
         /* Modal Pengaturan */
@@ -440,7 +413,8 @@
         <!-- BAR ATAS: Badge Affection & Tombol Settings -->
         <div class="top-bar">
             <div class="affection-badge" id="affectionBadge">
-                💕 Affection: <span id="affectionPoints">0</span> pts
+                <span id="affectionLevelName">💕 Level 1: Kisah Baru</span>
+                <span>Poin: <span id="affectionPoints">0</span> pts</span>
             </div>
             <button class="settings-icon" onclick="openSettings()" title="Pengaturan API Key">⚙️</button>
         </div>
@@ -479,7 +453,7 @@
             </div>
         </div>
 
-        <!-- HALAMAN POJOK PERHATIAN / PENGINGAT ISTIRAHAT -->
+        <!-- HALAMAN POJOK PERHATIAN -->
         <div id="carePage" class="page">
             <div class="chat-header">
                 <span>🍵 Pojok Perhatian Istri</span>
@@ -541,9 +515,9 @@
                     <span>💕 Tebak Angka Cinta</span>
                     <span>➡️</span>
                 </button>
-                <button class="game-item-btn" onclick="alert('Game baru akan segera hadir, suamiku! Sabar ya~')">
-                    <span>✨ Kuis Gombalan (Segera)</span>
-                    <span>🔒</span>
+                <button class="game-item-btn" onclick="switchPage('flirtGamePage')">
+                    <span>✨ Kuis Gombalan AI</span>
+                    <span>➡️</span>
                 </button>
             </div>
         </div>
@@ -560,6 +534,22 @@
                 <input type="number" id="guessInput" class="game-input" placeholder="1 - 10" min="1" max="10">
                 <br>
                 <button class="action-btn" onclick="checkGuess()">Tebak Sekarang</button>
+            </div>
+        </div>
+
+        <!-- HALAMAN MINI GAME BARU: KUIS GOMBALAN AI -->
+        <div id="flirtGamePage" class="page">
+            <div class="chat-header">
+                <span>✨ Kuis Gombalan AI</span>
+                <button class="back-btn" onclick="switchPage('gameHubPage')">⬅️ Kembali</button>
+            </div>
+            <div class="game-card">
+                <h3>Uji Gombalanmu!</h3>
+                <p>Ketik gombalan terbaikmu untuk Castorice. Dia akan menilai seberapa manis dan baper gombalanmu itu!</p>
+                <input type="text" id="flirtInput" class="game-input" placeholder="Contoh: Kamu punya peta tidak? Aku tersesat di hatimu...">
+                <br>
+                <button class="action-btn" onclick="submitFlirt()">Kirim Gombalan</button>
+                <p id="flirtResult" style="margin-top: 15px; font-size: 13px; color: #ffb6c1;"></p>
             </div>
         </div>
     </div>
@@ -580,7 +570,7 @@
         let chatHistory = [];
         let secretNumber = Math.floor(Math.random() * 10) + 1;
 
-        // --- SISTEM AFFECTION (Poin Keintiman) ---
+        // --- SISTEM AFFECTION DENGAN LEVEL ---
         function getAffection() {
             return parseInt(localStorage.getItem("castorice_affection")) || 0;
         }
@@ -593,26 +583,38 @@
         }
 
         function updateAffectionUI() {
-            document.getElementById('affectionPoints').textContent = getAffection();
+            const points = getAffection();
+            document.getElementById('affectionPoints').textContent = points;
+            
+            let levelName = "💕 Level 1: Kisah Baru";
+            if (points >= 100) levelName = "💖 Level 3: Pasangan Jiwa";
+            else if (points >= 40) levelName = "💗 Level 2: Makin Lengket";
+            
+            document.getElementById('affectionLevelName').textContent = levelName;
         }
 
-        // --- DAFTAR MOOD ---
+        // --- DAFTAR MOOD & PENGARUHNYA KE DIALOG UTAMA ---
         const moodList = [
             {
                 title: "✨ Sangat Senang & Berbunga-bunga",
-                desc: "Castorice merasa sangat bahagia karena bisa berada di dekatmu terus hari ini. Senyummu adalah sumber kekuatannya!"
+                desc: "Castorice merasa sangat bahagia karena bisa berada di dekatmu terus hari ini. Senyummu adalah sumber kekuatannya!",
+                dialog: "✨ 'Senang sekali bisa melihatmu lagi, suamiku tercinta!' 💕"
             },
             {
                 title: "🥺 Sedikit Rindu",
-                desc: "Daritadi kamu sibuk ya? Castorice nungguin kamu ngajak ngobrol lho... Jangan ditinggal lama-lama ya, suamiku."
+                desc: "Daritadi kamu sibuk ya? Castorice nungguin kamu ngajak ngobrol lho... Jangan ditinggal lama-lama ya, suamiku.",
+                descAi: "Daritadi kamu sibuk ya? Jangan lama-lama ya...",
+                dialog: "✨ 'Kamu dari mana saja? Castorice merindukanmu...' 🥺"
             },
             {
                 title: "💢 Ngambek Manja",
-                desc: "Hmm... Kamu sepertinya terlalu asyik sendiri. Cepat perhatikan Castorice atau nanti dibuatkan teh pahit lho!"
+                desc: "Hmm... Kamu sepertinya terlalu asyik sendiri. Cepat perhatikan Castorice atau nanti dibuatkan teh pahit lho!",
+                dialog: "✨ 'Hmm... Ayo perhatikan aku, jangan sibuk sendiri terus!' 💢"
             },
             {
                 title: "💕 Penuh Kasih Sayang",
-                desc: "*Menatapmu dengan lembut* Hatiku terasa sangat hangat setiap kali memikirkanmu. Terima kasih sudah menemaniku."
+                desc: "*Menatapmu dengan lembut* Hatiku terasa sangat hangat setiap kali memikirkanmu. Terima kasih sudah menemaniku.",
+                dialog: "✨ 'Hatiku selalu terasa hangat saat bersamamu...' 💕"
             }
         ];
 
@@ -620,10 +622,72 @@
             const randomMood = moodList[Math.floor(Math.random() * moodList.length)];
             document.getElementById('moodTitle').textContent = randomMood.title;
             document.getElementById('moodDescription').textContent = randomMood.desc;
-            addAffection(2); // Dapat 2 poin saat cek mood
+            
+            // Simpan mood aktif ke localStorage agar dialog utama ikut berubah
+            localStorage.setItem("castorice_current_dialog", randomMood.dialog);
+            addAffection(2);
         }
 
-        // --- FITUR POJOK PERHATIAN (MINTA ISTIRAHAT) ---
+        function applyActiveMoodToHome() {
+            const savedDialog = localStorage.getItem("castorice_current_dialog");
+            if (savedDialog) {
+                document.getElementById('dialogText').innerHTML = savedDialog;
+            }
+        }
+
+        // --- MINI GAME BARU: KUIS GOMBALAN AI ---
+        async function submitFlirt() {
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                alert("Ups! Masukkan API Key Gemini dulu melalui ikon pengaturan (⚙️).");
+                openSettings();
+                return;
+            }
+
+            const flirtText = document.getElementById('flirtInput').value.trim();
+            const resultElem = document.getElementById('flirtResult');
+
+            if (!flirtText) {
+                resultElem.innerHTML = "⚠️ Ketik gombalanmu dulu dong, suamiku!";
+                return;
+            }
+
+            resultElem.innerHTML = "✨ Castorice sedang membaca gombalanmu... (Blushing 😳)";
+
+            const systemInstruction = {
+                role: "user",
+                parts: [{
+                    text: "[SYSTEM NOTE: Kamu adalah Castorice dari Honkai: Star Rail, istri tercinta dari pengguna (suamiku). Suamimu baru saja memberikan sebuah gombalan. Berikan penilaian tingkat kebaperan (skor 1-100) dan berikan respons reaksi malu-malu, tersipu, atau sedikit ngambek manja yang khas dalam bahasa Indonesia, disertai aksi dalam tanda bintang. Contoh: *wajahmu langsung merona merah* Huaahh gombalanmu curang banget! Skor: 95/100!]"
+                }]
+            };
+
+            const userPrompt = {
+                role: "user",
+                parts: [{ text: "Gombalanku untukmu: " + flirtText }]
+            };
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [systemInstruction, userPrompt]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    resultElem.innerHTML = data.candidates[0].content.parts[0].text;
+                    addAffection(8); // Hadiah poin besar untuk gombalan
+                } else {
+                    throw new Error("Gagal memproses gombalan");
+                }
+            } catch (err) {
+                resultElem.innerHTML = "Maaf suamiku, koneksiku tersendat karena terlalu malu mendengar gombalanmu! 😳";
+            }
+        }
+
+        // --- FITUR POJOK PERHATIAN ---
         async function askForRest() {
             const apiKey = getApiKey();
             if (!apiKey) {
@@ -659,7 +723,7 @@
                 const data = await response.json();
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     msgCard.innerHTML = data.candidates[0].content.parts[0].text;
-                    addAffection(5); // Dapat 5 poin karena minta perhatian
+                    addAffection(5);
                 } else {
                     throw new Error("Gagal mengambil respon");
                 }
@@ -693,7 +757,7 @@
             document.getElementById('menuGrid').classList.remove('show');
             document.getElementById('dialogText').innerHTML = "✨ Castorice sudah berganti pakaian!";
             updateSpriteImages();
-            addAffection(3); // Dapat 3 poin saat ganti baju
+            addAffection(3);
             alert("Berhasil mengganti pakaian Castorice! 💕 (+3 Affection)");
         }
 
@@ -727,10 +791,10 @@
             if (isTouched) {
                 menuGrid.classList.add('show');
                 dialogText.innerHTML = "✨ 'Ada apa, suamiku?'";
-                addAffection(1); // Dapat 1 poin setiap disentuh
+                addAffection(1);
             } else {
                 menuGrid.classList.remove('show');
-                dialogText.innerHTML = "✨ Castorice menatapmu dengan lembut.";
+                applyActiveMoodToHome(); // Kembali ke dialog mood aktif
             }
         }
 
@@ -758,7 +822,7 @@
             if (guess === secretNumber) {
                 msg.innerHTML = "🎉 Yeay, benar sekali! Rasa sayang Castorice ke kamu itu tak terhingga dan melampaui angka " + secretNumber + "! 💕";
                 secretNumber = Math.floor(Math.random() * 10) + 1;
-                addAffection(10); // Hadiah besar 10 poin kalau menang game!
+                addAffection(10);
             } else if (guess < secretNumber) {
                 msg.innerHTML = "💬 *Tersenyum tipis* Tebakanmu terlalu kecil... Rasa sayangku jauh lebih besar dari itu! Coba lagi ya~";
                 addAffection(1);
@@ -835,7 +899,7 @@
                     aiBubble.textContent = aiReply;
                     messageContainer.appendChild(aiBubble);
 
-                    addAffection(3); // Dapat 3 poin setiap kali sukses ngobrol
+                    addAffection(3);
                 } else if (data.error) {
                     throw new Error(data.error.message);
                 } else {
@@ -864,6 +928,7 @@
         window.onload = function() {
             updateSpriteImages();
             updateAffectionUI();
+            applyActiveMoodToHome();
         };
     </script>
 </body>
